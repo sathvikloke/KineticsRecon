@@ -1,0 +1,47 @@
+# configs/pretrain.yaml — Stage 1: fastMRI Breast pre-training
+stage: pretrain
+
+# Paths
+fastmri_root: /Users/sathvikloke/Downloads/fastMRI_breast_IDS_271_280
+output_dir:   runs/pretrain
+
+# Training
+epochs:       50
+batch_size:   4
+lr:           1e-4
+num_workers:  4
+amp:          false   # set true if on GPU with AMP support
+
+# Model
+n_coils:      1       # single-coil simulation from temptv
+n_blocks:     8
+acceleration: 6
+
+---
+# configs/finetune.yaml — Stage 2: MAMAMIA fine-tuning
+stage: finetune
+
+# Paths
+mamamia_root: /Users/sathvikloke
+mamamia_csv:  /Users/sathvikloke/clinical_and_imaging_info.xlsx
+checkpoint:   runs/pretrain/best.pt
+output_dir:   runs/finetune
+
+# Training
+epochs:       100
+batch_size:   4
+lr:           1e-4
+num_workers:  4
+amp:          false
+freeze_epochs: 10
+
+# Model
+n_phases:     3
+patch_size:   320
+acceleration: 6
+
+# Loss weights
+w_img:   1.0
+w_pk:    0.5
+w_curve: 0.3
+w_pcr:   1.0

@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.DS_Store
+runs/
+results/
+*.pt
+*.h5
+*.nii.gz
+{data,models,losses,sampling,evaluation,configs,scripts,utils}
+__MACOSX/
