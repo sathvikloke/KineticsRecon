@@ -93,11 +93,14 @@ def enhancement_curve_rmse(recon: Tensor, target: Tensor) -> float:
     """
     RMSE of voxel-wise normalised enhancement curves.
     recon, target: [B, T, H, W]
+
+    Clamp enhancement to [-10, 10] to suppress blow-up from near-zero
+    pre-contrast voxels (same guard used in the training curve loss).
     """
     pre_r = recon[:, 0:1]
     pre_t = target[:, 0:1]
-    enh_r = (recon  - pre_r)  / (pre_r.abs()  + 1e-6)
-    enh_t = (target - pre_t)  / (pre_t.abs()  + 1e-6)
+    enh_r = ((recon  - pre_r)  / (pre_r.abs()  + 1e-6)).clamp(-10, 10)
+    enh_t = ((target - pre_t)  / (pre_t.abs()  + 1e-6)).clamp(-10, 10)
     return F.mse_loss(enh_r, enh_t).sqrt().item()
 
 
